@@ -33,7 +33,7 @@ const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 px-2 pb-safe md:hidden overflow-visible">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 shadow-[0_-1px_10px_rgba(0,0,0,0.05)] z-50 px-2 pb-safe md:hidden overflow-visible">
       <div className="flex items-center justify-around h-16">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
