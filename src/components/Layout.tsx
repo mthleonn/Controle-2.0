@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Modal } from './ui/Modal';
 import { TransactionForm } from './TransactionForm';
 
-const MobileHeader = ({ onOpenMenu }: { onOpenMenu: () => void }) => {
+const MobileHeader = () => {
   const { signOut } = useAuth();
   
   return (
@@ -150,7 +150,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans">
-      <MobileHeader onOpenMenu={() => {}} />
+      <MobileHeader />
       <Sidebar onOpenNewTransaction={() => setIsTransactionModalOpen(true)} />
       <main className="md:pl-64 min-h-screen pt-20 pb-24 md:pt-0 md:pb-0 relative z-0">
         <div className="max-w-7xl mx-auto p-4 md:p-8">
