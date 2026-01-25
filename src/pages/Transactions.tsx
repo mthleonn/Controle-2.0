@@ -62,40 +62,37 @@ export const Transactions = () => {
         {/* Mobile List View */}
         <div className="md:hidden space-y-3">
           {filteredTransactions.map((transaction) => (
-            <div key={transaction.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-              <div className="flex justify-between items-start mb-2">
+            <div key={transaction.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group active:scale-[0.99] transition-transform duration-200">
+              <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${transaction.type === 'income' ? 'bg-indigo-500' : 'bg-red-500'}`}></div>
+              <div className="pl-3 flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="font-semibold text-slate-800">{transaction.description}</h3>
-                  <span className="text-xs text-slate-500">{formatDate(transaction.date)}</span>
+                  <h3 className="font-bold text-slate-800 text-base">{transaction.description}</h3>
+                  <span className="text-xs text-slate-400 font-medium">{formatDate(transaction.date)}</span>
                 </div>
                 <button
                   onClick={() => removeTransaction(transaction.id)}
-                  className="text-slate-400 hover:text-red-500 p-1"
+                  className="text-slate-300 hover:text-red-500 p-2 -mr-2 -mt-2 active:bg-red-50 rounded-full transition-colors"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={18} />
                 </button>
               </div>
-              <div className="flex justify-between items-center mt-3">
-                <span className="px-2 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">
-                  {transaction.category}
-                </span>
-                <span className={`font-bold ${
+              <div className="pl-3 flex justify-between items-end mt-3">
+                <div className="flex flex-col gap-1">
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-fit">
+                    {transaction.category}
+                  </span>
+                  {transaction.type === 'expense' && (
+                     <span className={`text-[10px] font-medium ${transaction.isEssential ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {transaction.isEssential ? '• Essencial' : '• Supérfluo'}
+                     </span>
+                  )}
+                </div>
+                <span className={`text-lg font-bold tracking-tight ${
                   transaction.type === 'income' ? 'text-indigo-600' : 'text-red-600'
                 }`}>
                   {transaction.type === 'income' ? '+' : '-'} {formatCurrency(transaction.amount)}
                 </span>
               </div>
-              {transaction.type === 'expense' && (
-                <div className="mt-2">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${
-                    transaction.isEssential 
-                      ? 'border-accent text-accent bg-accent/5' 
-                      : 'border-danger text-danger bg-danger/5'
-                  }`}>
-                    {transaction.isEssential ? 'Essencial' : 'Não Essencial'}
-                  </span>
-                </div>
-              )}
             </div>
           ))}
         </div>

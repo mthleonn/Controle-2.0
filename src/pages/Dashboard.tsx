@@ -53,50 +53,51 @@ export const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <Card className="border-l-4 border-l-primary p-4 md:p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
-            <div>
-              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Saldo Atual</p>
-              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalBalance)}</h3>
+        {/* Saldo Atual - Destaque Mobile */}
+        <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-primary to-indigo-600 rounded-2xl p-5 md:p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-8 -mt-8 blur-2xl"></div>
+          <div className="relative z-10">
+            <p className="text-sm font-medium text-white/80 mb-1">Saldo Atual</p>
+            <h3 className="text-3xl font-bold break-words tracking-tight">{formatCurrency(stats.totalBalance)}</h3>
+            <div className="mt-4 flex items-center gap-2 text-xs font-medium text-white/90 bg-white/20 w-fit px-2 py-1 rounded-lg backdrop-blur-sm">
+              <DollarSign size={14} />
+              <span>Disponível</span>
             </div>
-            <div className="p-1.5 md:p-2 bg-primary/10 rounded-lg text-primary self-end md:self-auto">
-              <DollarSign size={16} className="md:w-5 md:h-5" />
+          </div>
+        </div>
+
+        <Card className="col-span-1 border-none shadow-sm bg-white/50 backdrop-blur-sm">
+          <div className="p-3 md:p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-danger/10 rounded-lg text-danger">
+                <TrendingDown size={16} />
+              </div>
+              <p className="text-xs font-medium text-slate-500">Despesas</p>
             </div>
+            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalExpenses)}</h3>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-danger p-4 md:p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
-            <div>
-              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Despesas</p>
-              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalExpenses)}</h3>
+        <Card className="col-span-1 border-none shadow-sm bg-white/50 backdrop-blur-sm">
+          <div className="p-3 md:p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-500">
+                <DollarSign size={16} />
+              </div>
+              <p className="text-xs font-medium text-slate-500">Receitas</p>
             </div>
-            <div className="p-1.5 md:p-2 bg-danger/10 rounded-lg text-danger self-end md:self-auto">
-              <TrendingDown size={16} className="md:w-5 md:h-5" />
-            </div>
+            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalIncome)}</h3>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-accent p-4 md:p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
+        <Card className="col-span-2 lg:col-span-1 border-none shadow-sm bg-white/50 backdrop-blur-sm">
+          <div className="p-3 md:p-6 flex items-center justify-between">
             <div>
-              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Investido</p>
-              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalInvested)}</h3>
+              <p className="text-xs font-medium text-slate-500 mb-1">Total Investido</p>
+              <h3 className="text-xl md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalInvested)}</h3>
             </div>
-            <div className="p-1.5 md:p-2 bg-accent/10 rounded-lg text-accent self-end md:self-auto">
-              <TrendingUp size={16} className="md:w-5 md:h-5" />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="border-l-4 border-l-indigo-500 p-4 md:p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
-            <div>
-              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Receitas</p>
-              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalIncome)}</h3>
-            </div>
-            <div className="p-1.5 md:p-2 bg-indigo-50 rounded-lg text-indigo-500 self-end md:self-auto">
-              <DollarSign size={16} className="md:w-5 md:h-5" />
+            <div className="p-2 bg-accent/10 rounded-xl text-accent">
+              <TrendingUp size={20} />
             </div>
           </div>
         </Card>
