@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Wallet } from 'lucide-react';
@@ -54,6 +54,18 @@ export const Login = () => {
           <h1 className="text-2xl font-bold text-slate-800">Bem-vindo ao Controle+</h1>
           <p className="text-slate-500">Acesse sua conta para gerenciar suas finanças</p>
         </div>
+
+        {(!isSupabaseConfigured) && (
+          <div className="bg-yellow-50 text-yellow-700 p-4 rounded-lg text-sm mb-6 border border-yellow-200">
+            <strong>⚠️ Configuração Pendente</strong>
+            <p className="mt-1">
+              As variáveis de ambiente do Supabase não foram encontradas.
+            </p>
+            <p className="mt-2 text-xs">
+              Se você está na Vercel, vá em <strong>Settings &gt; Environment Variables</strong> e adicione <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_ANON_KEY</code>.
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 text-center border border-red-100">

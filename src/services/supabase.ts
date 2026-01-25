@@ -14,6 +14,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase URL ou Key não encontrados. Verifique o arquivo .env');
 }
 
+export const isSupabaseConfigured = supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://setup-your-env-vars.supabase.co';
+
 export const supabase = createClient(
   supabaseUrl || 'https://setup-your-env-vars.supabase.co',
   supabaseAnonKey || 'setup-your-env-vars'
