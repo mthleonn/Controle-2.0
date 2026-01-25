@@ -30,6 +30,8 @@ export const Dashboard = () => {
     value
   })).sort((a, b) => b.value - a.value);
 
+  const hasData = categoryData.length > 0;
+
   // Dados para o gráfico Essencial vs Não Essencial
   const essentialData = [
     { name: 'Essencial', value: stats.essentialExpenses },
@@ -104,60 +106,72 @@ export const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="col-span-1 lg:col-span-2 min-h-[400px]">
           <h3 className="text-lg font-bold text-slate-800 mb-6">Despesas por Categoria</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RechartsTooltip formatter={(value: number) => formatCurrency(value)} />
-                <Legend 
-                  layout="horizontal" 
-                  verticalAlign="bottom" 
-                  align="center"
-                  wrapperStyle={{ paddingTop: '20px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="h-[300px] w-full flex items-center justify-center">
+            {hasData ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center text-slate-400">
+                <p>Nenhuma despesa registrada</p>
+              </div>
+            )}
           </div>
         </Card>
 
         <Card className="col-span-1 lg:col-span-2 min-h-[400px]">
           <h3 className="text-lg font-bold text-slate-800 mb-6">Essencial vs Não Essencial</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={essentialData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  <Cell fill="#ef4444" /> {/* Não Essencial */}
-                  <Cell fill="#22c55e" /> {/* Essencial */}
-                </Pie>
-                <RechartsTooltip formatter={(value: number) => formatCurrency(value)} />
-                <Legend 
-                  layout="horizontal" 
-                  verticalAlign="bottom" 
-                  align="center"
-                  wrapperStyle={{ paddingTop: '20px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="h-[300px] w-full flex items-center justify-center">
+            {hasData ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={essentialData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    <Cell fill="#ef4444" /> {/* Não Essencial */}
+                    <Cell fill="#22c55e" /> {/* Essencial */}
+                  </Pie>
+                  <RechartsTooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center text-slate-400">
+                <p>Nenhuma despesa registrada</p>
+              </div>
+            )}
           </div>
         </Card>
       </div>

@@ -9,7 +9,7 @@ const MobileHeader = ({ onOpenMenu }: { onOpenMenu: () => void }) => {
   const { signOut } = useAuth();
   
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-50 flex items-center justify-between px-4 md:hidden">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-40 flex items-center justify-between px-4 md:hidden">
       <div className="flex items-center gap-2">
         <img src="/logo.png" alt="Controle+" className="w-8 h-8 object-contain" />
         <span className="font-bold text-slate-800 text-lg">Controle+</span>
@@ -33,7 +33,7 @@ const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 px-2 pb-safe md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 px-2 pb-safe md:hidden overflow-visible">
       <div className="flex items-center justify-around h-16">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -43,7 +43,7 @@ const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void 
               <button 
                 key={item.label}
                 onClick={item.onClick}
-                className="flex flex-col items-center justify-center -mt-6"
+                className="flex flex-col items-center justify-center -mt-6 relative z-10"
               >
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 text-white">
                   <PlusCircle size={24} />
@@ -84,7 +84,7 @@ const Sidebar = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void })
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-primary text-white hidden md:flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-primary text-white hidden md:flex flex-col z-30">
       <div className="p-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <img src="/logo.png" alt="Controle+" className="w-8 h-8 object-contain" onError={(e) => {
@@ -144,7 +144,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="min-h-screen bg-background text-text-primary font-sans">
       <MobileHeader onOpenMenu={() => {}} />
       <Sidebar onOpenNewTransaction={() => setIsTransactionModalOpen(true)} />
-      <main className="md:pl-64 min-h-screen pt-20 pb-24 md:pt-0 md:pb-0">
+      <main className="md:pl-64 min-h-screen pt-20 pb-24 md:pt-0 md:pb-0 relative z-0">
         <div className="max-w-7xl mx-auto p-4 md:p-8">
           {children}
         </div>
