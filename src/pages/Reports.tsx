@@ -268,8 +268,8 @@ export const Reports = () => {
         </Card>
 
         <Card title="Top Despesas" className="shadow-lg border-none">
-          <div className="flex flex-col md:flex-row items-center gap-6 h-[300px]">
-            <div className="w-full md:w-1/2 h-full">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:h-[300px]">
+            <div className="w-full md:w-1/2 h-[250px] md:h-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

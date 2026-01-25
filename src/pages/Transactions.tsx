@@ -58,10 +58,53 @@ export const Transactions = () => {
         </div>
       </div>
 
-      <Card className="overflow-hidden p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
+      <div className="space-y-4">
+        {/* Mobile List View */}
+        <div className="md:hidden space-y-3">
+          {filteredTransactions.map((transaction) => (
+            <div key={transaction.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-semibold text-slate-800">{transaction.description}</h3>
+                  <span className="text-xs text-slate-500">{formatDate(transaction.date)}</span>
+                </div>
+                <button
+                  onClick={() => removeTransaction(transaction.id)}
+                  className="text-slate-400 hover:text-red-500 p-1"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <div className="flex justify-between items-center mt-3">
+                <span className="px-2 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">
+                  {transaction.category}
+                </span>
+                <span className={`font-bold ${
+                  transaction.type === 'income' ? 'text-indigo-600' : 'text-red-600'
+                }`}>
+                  {transaction.type === 'income' ? '+' : '-'} {formatCurrency(transaction.amount)}
+                </span>
+              </div>
+              {transaction.type === 'expense' && (
+                <div className="mt-2">
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${
+                    transaction.isEssential 
+                      ? 'border-accent text-accent bg-accent/5' 
+                      : 'border-danger text-danger bg-danger/5'
+                  }`}>
+                    {transaction.isEssential ? 'Essencial' : 'Não Essencial'}
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <Card className="hidden md:block overflow-hidden p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Descrição</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Categoria</th>
@@ -131,6 +174,7 @@ export const Transactions = () => {
           </table>
         </div>
       </Card>
+      </div>
 
       <Modal
         isOpen={isModalOpen}

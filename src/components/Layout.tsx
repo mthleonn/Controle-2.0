@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { Modal } from './ui/Modal';
+import { TransactionForm } from './TransactionForm';
 
 const MobileHeader = ({ onOpenMenu }: { onOpenMenu: () => void }) => {
   const { signOut } = useAuth();
@@ -19,13 +21,13 @@ const MobileHeader = ({ onOpenMenu }: { onOpenMenu: () => void }) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void }) => {
   const location = useLocation();
   
   const menuItems = [
     { icon: LayoutDashboard, label: 'Início', path: '/' },
     { icon: Wallet, label: 'Transações', path: '/transactions' },
-    { icon: PlusCircle, label: 'Novo', path: '#', isAction: true }, // Placeholder for action
+    { icon: PlusCircle, label: 'Novo', path: '#', isAction: true, onClick: onOpenNewTransaction },
     { icon: Target, label: 'Metas', path: '/goals' },
     { icon: TrendingUp, label: 'Invest.', path: '/investments' },
   ];
@@ -40,6 +42,7 @@ const MobileNav = () => {
             return (
               <button 
                 key={item.label}
+                onClick={item.onClick}
                 className="flex flex-col items-center justify-center -mt-6"
               >
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 text-white">
@@ -68,7 +71,7 @@ const MobileNav = () => {
   );
 };
 
-const Sidebar = () => {
+const Sidebar = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void }) => {
   const location = useLocation();
   const { signOut } = useAuth();
   
@@ -115,7 +118,10 @@ const Sidebar = () => {
       </nav>
 
       <div className="p-4 space-y-2">
-        <button className="w-full bg-white/10 hover:bg-white/20 text-white p-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+        <button 
+          onClick={onOpenNewTransaction}
+          className="w-full bg-white/10 hover:bg-white/20 text-white p-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+        >
           <PlusCircle size={20} />
           <span>Novo Gasto</span>
         </button>
@@ -132,16 +138,26 @@ const Sidebar = () => {
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans">
       <MobileHeader onOpenMenu={() => {}} />
-      <Sidebar />
+      <Sidebar onOpenNewTransaction={() => setIsTransactionModalOpen(true)} />
       <main className="md:pl-64 min-h-screen pt-20 pb-24 md:pt-0 md:pb-0">
         <div className="max-w-7xl mx-auto p-4 md:p-8">
           {children}
         </div>
       </main>
-      <MobileNav />
+      <MobileNav onOpenNewTransaction={() => setIsTransactionModalOpen(true)} />
+
+      <Modal
+        isOpen={isTransactionModalOpen}
+        onClose={() => setIsTransactionModalOpen(false)}
+        title="Nova Transação"
+      >
+        <TransactionForm onSuccess={() => setIsTransactionModalOpen(false)} />
+      </Modal>
     </div>
   );
 };
