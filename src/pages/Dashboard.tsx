@@ -52,51 +52,51 @@ export const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-primary">
-          <div className="flex items-start justify-between">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <Card className="border-l-4 border-l-primary p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">Saldo Atual</p>
-              <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalBalance)}</h3>
+              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Saldo Atual</p>
+              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalBalance)}</h3>
             </div>
-            <div className="p-2 bg-primary/10 rounded-lg text-primary">
-              <DollarSign size={20} />
+            <div className="p-1.5 md:p-2 bg-primary/10 rounded-lg text-primary self-end md:self-auto">
+              <DollarSign size={16} className="md:w-5 md:h-5" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-danger">
-          <div className="flex items-start justify-between">
+        <Card className="border-l-4 border-l-danger p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">Despesas</p>
-              <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalExpenses)}</h3>
+              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Despesas</p>
+              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalExpenses)}</h3>
             </div>
-            <div className="p-2 bg-danger/10 rounded-lg text-danger">
-              <TrendingDown size={20} />
+            <div className="p-1.5 md:p-2 bg-danger/10 rounded-lg text-danger self-end md:self-auto">
+              <TrendingDown size={16} className="md:w-5 md:h-5" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-accent">
-          <div className="flex items-start justify-between">
+        <Card className="border-l-4 border-l-accent p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">Investido</p>
-              <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalInvested)}</h3>
+              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Investido</p>
+              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalInvested)}</h3>
             </div>
-            <div className="p-2 bg-accent/10 rounded-lg text-accent">
-              <TrendingUp size={20} />
+            <div className="p-1.5 md:p-2 bg-accent/10 rounded-lg text-accent self-end md:self-auto">
+              <TrendingUp size={16} className="md:w-5 md:h-5" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-indigo-500">
-          <div className="flex items-start justify-between">
+        <Card className="border-l-4 border-l-indigo-500 p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">Receitas</p>
-              <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(stats.totalIncome)}</h3>
+              <p className="text-xs md:text-sm font-medium text-slate-500 mb-1">Receitas</p>
+              <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalIncome)}</h3>
             </div>
-            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-500">
-              <DollarSign size={20} />
+            <div className="p-1.5 md:p-2 bg-indigo-50 rounded-lg text-indigo-500 self-end md:self-auto">
+              <DollarSign size={16} className="md:w-5 md:h-5" />
             </div>
           </div>
         </Card>
