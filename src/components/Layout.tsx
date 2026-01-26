@@ -9,7 +9,7 @@ const MobileHeader = () => {
   const { signOut } = useAuth();
   
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 z-40 flex items-center justify-between px-6 md:hidden transition-all duration-200">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 z-[90] flex items-center justify-between px-6 md:hidden transition-all duration-200">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-gradient-to-tr from-primary to-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
            <span className="text-white font-bold text-sm">C+</span>
@@ -38,7 +38,7 @@ const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 px-6 pb-safe md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-[100] px-6 pb-safe pt-2 md:hidden">
       <div className="flex items-center justify-between h-20">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
