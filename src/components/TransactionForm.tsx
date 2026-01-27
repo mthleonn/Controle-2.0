@@ -181,10 +181,19 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
         </div>
       )}
 
-      <div className="pt-4">
-        <Button type="submit" fullWidth>
-          Adicionar {type === 'expense' ? 'Despesa' : 'Receita'}
-        </Button>
+      <div className="pt-4 flex gap-3">
+        <button
+          type="button"
+          onClick={onSuccess}
+          className="flex-1 py-3 px-4 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200 transition-colors"
+        >
+          Cancelar
+        </button>
+        <div className="flex-[2]">
+          <Button type="submit" fullWidth>
+            Adicionar {type === 'expense' ? 'Despesa' : 'Receita'}
+          </Button>
+        </div>
       </div>
     </form>
   );
