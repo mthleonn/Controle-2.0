@@ -321,128 +321,144 @@ export const Investments: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 my-4">
-            <div className="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center bg-white sticky top-0 z-10">
-              <div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Novo Investimento</h2>
-                <p className="text-slate-500 text-xs md:text-sm font-medium">Adicione ativos à sua carteira inteligente.</p>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400 hover:text-slate-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
-            </div>
-            
-            <form onSubmit={handleAdd} className="p-6 md:p-8 space-y-6">
-              <div className="flex p-1 bg-slate-100 rounded-2xl">
-                <button
-                  type="button"
-                  onClick={() => { setType('crypto'); setSearchTerm(''); }}
-                  className={`flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold transition-all ${type === 'crypto' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Criptoativos
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setType('real_estate'); setSearchTerm(''); }}
-                  className={`flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold transition-all ${type === 'real_estate' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Fundos Imobiliários
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full md:max-w-lg h-[95vh] md:h-auto md:max-h-[90vh] rounded-t-[2rem] md:rounded-[2rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 flex flex-col">
+            <form onSubmit={handleAdd} className="flex flex-col h-full">
+              <div className="p-5 md:p-8 border-b border-slate-50 flex justify-between items-center bg-white shrink-0">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Novo Investimento</h2>
+                  <p className="text-slate-500 text-xs md:text-sm font-medium">Adicione ativos à sua carteira.</p>
+                </div>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
-
-              <div className="relative">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Selecione o Ativo</label>
-                <div className="relative">
-                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                   </div>
-                   <input 
-                    type="text" 
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setShowDropdown(true);
-                      if (!e.target.value) setSelectedAsset(null);
-                    }}
-                    onFocus={() => setShowDropdown(true)}
-                    placeholder={type === 'crypto' ? "Ex: Bitcoin, ETH, SOL..." : "Ex: HGLG11, MXRF11..."}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
-                  />
+              
+              <div className="p-5 md:p-8 overflow-y-auto flex-1 space-y-6 custom-scrollbar">
+                <div className="flex p-1 bg-slate-100 rounded-2xl shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => { setType('crypto'); setSearchTerm(''); }}
+                    className={`flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold transition-all ${type === 'crypto' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    Criptoativos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setType('real_estate'); setSearchTerm(''); }}
+                    className={`flex-1 py-3 px-4 rounded-xl text-xs md:text-sm font-bold transition-all ${type === 'real_estate' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  >
+                    Fundos Imobiliários
+                  </button>
                 </div>
 
-                {showDropdown && filteredAssets.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-60 overflow-y-auto z-50">
-                    {filteredAssets.map((asset: any) => (
-                      <button
-                        key={asset.id || asset.symbol}
-                        type="button"
-                        onClick={() => handleSelectAsset(asset)}
-                        className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center space-x-3 transition-colors border-b border-slate-50 last:border-0"
-                      >
-                        {asset.image ? (
-                          <img src={asset.image} alt={asset.name} className="w-8 h-8 rounded-full" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-500">
-                            {asset.symbol.slice(0, 2)}
+                <div className="relative shrink-0">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Selecione o Ativo</label>
+                  <div className="relative">
+                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                     </div>
+                     <input 
+                      type="text" 
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setShowDropdown(true);
+                        if (!e.target.value) setSelectedAsset(null);
+                      }}
+                      onFocus={() => setShowDropdown(true)}
+                      placeholder={type === 'crypto' ? "Ex: Bitcoin, ETH, SOL..." : "Ex: HGLG11, MXRF11..."}
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
+                    />
+                  </div>
+
+                  {showDropdown && filteredAssets.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-60 overflow-y-auto z-50">
+                      {filteredAssets.map((asset: any) => (
+                        <button
+                          key={asset.id || asset.symbol}
+                          type="button"
+                          onClick={() => handleSelectAsset(asset)}
+                          className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center space-x-3 transition-colors border-b border-slate-50 last:border-0"
+                        >
+                          {asset.image ? (
+                            <img src={asset.image} alt={asset.name} className="w-8 h-8 rounded-full" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-500">
+                              {asset.symbol.slice(0, 2)}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-bold text-slate-800 text-sm">{asset.name}</p>
+                            <p className="text-xs text-slate-400 font-bold">{asset.symbol.toUpperCase()}</p>
                           </div>
-                        )}
-                        <div>
-                          <p className="font-bold text-slate-800 text-sm">{asset.name}</p>
-                          <p className="text-xs text-slate-400 font-bold">{asset.symbol.toUpperCase()}</p>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Quantidade</label>
+                    <input 
+                      type="number" 
+                      step="any"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      placeholder="0.00" 
+                      className="w-full px-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Preço Médio</label>
+                    <input 
+                      type="number" 
+                      step="any"
+                      value={averagePrice}
+                      onChange={(e) => setAveragePrice(e.target.value)}
+                      placeholder="R$ 0,00" 
+                      className="w-full px-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
+                    />
+                  </div>
+                </div>
+
+                {selectedAsset && quantity && averagePrice && (
+                  <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 animate-in fade-in slide-in-from-bottom-4 shrink-0">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-black text-slate-400 uppercase">Custo Total Estimado</span>
+                      <span className="text-lg font-black text-slate-900">R$ {previewTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-black text-slate-400 uppercase">Cotação Atual</span>
+                      <span className="text-sm font-bold text-emerald-600">R$ {selectedAsset.currentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    </div>
                   </div>
                 )}
+                
+                {/* Spacer to ensure content isn't hidden behind fixed elements on very small screens if needed */}
+                <div className="h-4 md:h-0"></div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Quantidade</label>
-                  <input 
-                    type="number" 
-                    step="any"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="0.00" 
-                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Preço Médio</label>
-                  <input 
-                    type="number" 
-                    step="any"
-                    value={averagePrice}
-                    onChange={(e) => setAveragePrice(e.target.value)}
-                    placeholder="R$ 0,00" 
-                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none font-bold text-slate-700 transition-all text-sm md:text-base"
-                  />
+              <div className="p-5 md:p-8 border-t border-slate-50 bg-slate-50/50 shrink-0 pb-safe">
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 py-4 bg-slate-200 text-slate-700 font-bold rounded-2xl hover:bg-slate-300 transition-colors text-sm md:text-base"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!selectedAsset || !quantity || !averagePrice}
+                    className="flex-[2] bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-indigo-100 flex items-center justify-center space-x-3 active:scale-[0.98] text-sm md:text-base"
+                  >
+                    <ICONS.Dashboard className="w-5 h-5" />
+                    <span>CONFIRMAR</span>
+                  </button>
                 </div>
               </div>
-
-              {selectedAsset && quantity && averagePrice && (
-                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 animate-in fade-in slide-in-from-bottom-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-black text-slate-400 uppercase">Custo Total Estimado</span>
-                    <span className="text-lg font-black text-slate-900">R$ {previewTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-black text-slate-400 uppercase">Cotação Atual</span>
-                    <span className="text-sm font-bold text-emerald-600">R$ {selectedAsset.currentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={!selectedAsset || !quantity || !averagePrice}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white font-black py-5 rounded-[1.5rem] transition-all shadow-xl shadow-indigo-100 flex items-center justify-center space-x-3 active:scale-[0.98]"
-              >
-                <ICONS.Dashboard />
-                <span>CONFIRMAR E VINCULAR</span>
-              </button>
             </form>
           </div>
         </div>
