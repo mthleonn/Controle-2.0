@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut } from 'lucide-react';
+import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut, Bot, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useFinance } from '../context/FinanceContext';
 import { Modal } from './ui/Modal';
 import { TransactionForm } from './TransactionForm';
 
 const MobileHeader = () => {
   const { signOut } = useAuth();
+  const { isPrivacyMode, togglePrivacyMode } = useFinance();
   
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 z-[90] flex items-center justify-between px-6 md:hidden transition-all duration-200">
@@ -16,12 +18,27 @@ const MobileHeader = () => {
         </div>
         <span className="font-bold text-slate-800 text-lg tracking-tight">Controle+</span>
       </div>
-      <button 
-        onClick={signOut} 
-        className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 rounded-full active:bg-slate-100"
-      >
-        <LogOut size={18} />
-      </button>
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={togglePrivacyMode}
+          className="p-2 text-slate-400 hover:text-primary transition-colors bg-slate-50 rounded-full active:bg-slate-100"
+        >
+          {isPrivacyMode ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button>
+        <Link 
+          to="/assistant"
+          className="p-2 text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 rounded-full active:bg-indigo-100 relative"
+        >
+          <Bot size={20} />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full border-2 border-white"></span>
+        </Link>
+        <button 
+          onClick={signOut} 
+          className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 rounded-full active:bg-slate-100"
+        >
+          <LogOut size={18} />
+        </button>
+      </div>
     </header>
   );
 };
@@ -82,9 +99,11 @@ const MobileNav = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void 
 const Sidebar = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void }) => {
   const location = useLocation();
   const { signOut } = useAuth();
+  const { isPrivacyMode, togglePrivacyMode } = useFinance();
   
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+    { icon: Bot, label: 'Consultor IA', path: '/assistant' },
     { icon: Wallet, label: 'Transações', path: '/transactions' },
     { icon: Target, label: 'Metas', path: '/goals' },
     { icon: TrendingUp, label: 'Investimentos', path: '/investments' },
@@ -126,6 +145,14 @@ const Sidebar = ({ onOpenNewTransaction }: { onOpenNewTransaction: () => void })
       </nav>
 
       <div className="p-4 space-y-2">
+        <button 
+          onClick={togglePrivacyMode}
+          className="w-full bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white p-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+        >
+          {isPrivacyMode ? <EyeOff size={20} /> : <Eye size={20} />}
+          <span>{isPrivacyMode ? 'Mostrar Valores' : 'Ocultar Valores'}</span>
+        </button>
+
         <button 
           onClick={onOpenNewTransaction}
           className="w-full bg-white/10 hover:bg-white/20 text-white p-3 rounded-xl flex items-center justify-center gap-2 transition-colors"

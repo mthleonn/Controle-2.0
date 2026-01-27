@@ -78,9 +78,11 @@ export const Transactions = () => {
               </div>
               <div className="pl-3 flex justify-between items-end mt-3">
                 <div className="flex flex-col gap-1">
-                  <span className="px-2.5 py-1 rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-fit">
-                    {transaction.category}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider w-fit">
+                      {transaction.category}
+                    </span>
+                  </div>
                   {transaction.type === 'expense' && (
                      <span className={`text-[10px] font-medium ${transaction.isEssential ? 'text-emerald-600' : 'text-amber-600'}`}>
                         {transaction.isEssential ? '• Essencial' : '• Supérfluo'}

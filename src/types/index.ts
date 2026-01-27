@@ -17,6 +17,22 @@ export type TransactionCategory =
   | 'Investimento'
   | 'Renda Extra';
 
+export type RecurrenceFrequency = 'weekly' | 'monthly' | 'yearly';
+
+export interface RecurringTransaction {
+  id: string;
+  description: string;
+  amount: number;
+  category: TransactionCategory;
+  type: TransactionType;
+  isEssential: boolean;
+  paymentMethod: string;
+  frequency: RecurrenceFrequency;
+  startDate: string;
+  nextRun: string;
+  active: boolean;
+}
+
 export interface Transaction {
   id: string;
   description: string;
@@ -26,6 +42,7 @@ export interface Transaction {
   type: TransactionType;
   isEssential: boolean;
   paymentMethod: string;
+  receiptUrl?: string;
 }
 
 export interface Goal {
@@ -34,6 +51,7 @@ export interface Goal {
   targetAmount: number;
   currentAmount: number;
   deadline?: string;
+  createdAt: string;
 }
 
 export type InvestmentType = 'cdi' | 'crypto' | 'stock' | 'real_estate';
@@ -45,6 +63,8 @@ export interface Investment {
   investedAmount: number;
   currentAmount: number;
   targetAmount?: number; // Valor total do objetivo (opcional)
+  ticker?: string; // Código da ação/cripto (Ex: PETR4, BTC)
+  quantity?: number; // Quantidade de cotas/moedas
 }
 
 export interface DashboardStats {
@@ -54,4 +74,19 @@ export interface DashboardStats {
   totalInvested: number;
   essentialExpenses: number;
   nonEssentialExpenses: number;
+}
+
+export interface CoinGeckoMarketData {
+  id: string;
+  symbol: string;
+  name: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+  market_cap: number;
+  image: string;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
 }

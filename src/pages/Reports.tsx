@@ -3,10 +3,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell,
   PieChart, Pie, AreaChart, Area
 } from 'recharts';
-import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle, Wallet, ShieldCheck, Trophy } from 'lucide-react';
+import { Lightbulb, TrendingUp, Wallet, Trophy, Download } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
+import { useFinancialInsights } from '../hooks/useFinancialInsights';
 import { Card } from '../components/ui/Card';
 import { formatCurrency } from '../utils/format';
+import { exportToCSV } from '../utils/export';
 
 const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1'];
 
@@ -14,6 +16,17 @@ export const Reports = () => {
   const { transactions, getStats } = useFinance();
   const stats = getStats();
   const [activeTab, setActiveTab] = useState<'overview' | 'analysis'>('overview');
+
+  const handleExport = () => {
+    const headers = ['date', 'description', 'amount', 'type', 'category', 'paymentMethod', 'isEssential'];
+    const data = transactions.map(t => ({
+      ...t,
+      date: new Date(t.date).toLocaleDateString('pt-BR'),
+      amount: t.amount.toFixed(2),
+      isEssential: t.isEssential ? 'Sim' : 'Não'
+    }));
+    exportToCSV(data, headers, `controle-mais-relatorio-${new Date().toISOString().split('T')[0]}`);
+  };
 
   // --- Processamento de Dados ---
 
@@ -73,47 +86,8 @@ export const Reports = () => {
     return Math.min(Math.round(score), 100);
   }, [stats]);
 
-  // 4. Insights
-  const insights = useMemo(() => {
-    const list = [];
-    const essentialPercentage = stats.totalExpenses > 0 ? (stats.essentialExpenses / stats.totalExpenses) * 100 : 0;
-
-    if (stats.totalExpenses > stats.totalIncome && stats.totalIncome > 0) {
-      list.push({
-        type: 'danger',
-        icon: AlertTriangle,
-        title: 'Gastos Superando Ganhos',
-        message: 'Você está gastando mais do que ganha. Revise seus gastos não essenciais imediatamente.'
-      });
-    }
-
-    if (essentialPercentage > 60) {
-      list.push({
-        type: 'warning',
-        icon: ShieldCheck,
-        title: 'Gastos Essenciais Altos',
-        message: `Seus gastos fixos consomem ${essentialPercentage.toFixed(0)}% do orçamento. O ideal é manter abaixo de 50%.`
-      });
-    } else if (essentialPercentage > 0 && essentialPercentage < 50) {
-      list.push({
-        type: 'success',
-        icon: CheckCircle,
-        title: 'Orçamento Saudável',
-        message: 'Ótimo equilíbrio! Seus gastos essenciais estão sob controle.'
-      });
-    }
-
-    if (stats.totalInvested === 0 && stats.totalIncome > 0) {
-      list.push({
-        type: 'info',
-        icon: TrendingUp,
-        title: 'Comece a Investir',
-        message: 'Você tem saldo positivo mas nenhum investimento. Que tal começar sua Reserva de Emergência?'
-      });
-    }
-
-    return list;
-  }, [stats, transactions]);
+  // 4. Insights (Using Hook)
+  const { insights } = useFinancialInsights();
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -123,18 +97,29 @@ export const Reports = () => {
           <p className="text-slate-500 mt-1">Análise profunda da sua saúde patrimonial.</p>
         </div>
         
-        <div className="flex bg-slate-100 p-1 rounded-lg">
+        <div className="flex gap-2 items-center">
+          <div className="flex bg-slate-100 p-1 rounded-lg">
+            <button 
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'overview' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Visão Geral
+            </button>
+            <button 
+              onClick={() => setActiveTab('analysis')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'analysis' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Análise Detalhada
+            </button>
+          </div>
+          
           <button 
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'overview' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors font-medium text-sm h-10"
+            title="Exportar CSV"
           >
-            Visão Geral
-          </button>
-          <button 
-            onClick={() => setActiveTab('analysis')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'analysis' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
-          >
-            Análise Detalhada
+            <Download size={18} />
+            <span className="hidden sm:inline">Exportar</span>
           </button>
         </div>
       </div>

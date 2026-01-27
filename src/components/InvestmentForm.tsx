@@ -22,6 +22,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({ onSuccess }) => 
   const [type, setType] = useState<InvestmentType>('cdi');
   const [investedAmount, setInvestedAmount] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
+  const [ticker, setTicker] = useState('');
+  const [quantity, setQuantity] = useState('');
+
+  const isVariableIncome = ['stock', 'real_estate', 'crypto'].includes(type);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +38,8 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({ onSuccess }) => 
       investedAmount: initialAmount,
       currentAmount: initialAmount,
       targetAmount: targetAmount ? Number(targetAmount) : undefined,
+      ticker: isVariableIncome && ticker ? ticker.toUpperCase() : undefined,
+      quantity: isVariableIncome && quantity ? Number(quantity) : undefined,
     });
     onSuccess();
   };
@@ -55,7 +61,27 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({ onSuccess }) => 
         onChange={(e) => setType(e.target.value as InvestmentType)}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      {isVariableIncome && (
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Código (Ticker)"
+            placeholder="Ex: PETR4, BTC"
+            value={ticker}
+            onChange={(e) => setTicker(e.target.value)}
+            className="uppercase"
+          />
+          <Input
+            label="Quantidade"
+            type="number"
+            step="0.00000001"
+            placeholder="0"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Valor já Investido"
           type="number"

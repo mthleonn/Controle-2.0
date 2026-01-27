@@ -34,7 +34,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSuccess }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Valor Alvo"
           type="number"

@@ -9,6 +9,8 @@ import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { TransactionForm } from '../components/TransactionForm';
 import { formatCurrency, calculateProgress } from '../utils/format';
+import { PrivacyMask } from '../components/PrivacyMask';
+import { GamificationWidget } from '../components/GamificationWidget';
 
 const COLORS = ['#0f172a', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'];
 
@@ -52,13 +54,15 @@ export const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {/* Saldo Atual - Destaque Mobile */}
-        <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-primary to-indigo-600 rounded-2xl p-5 md:p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+        <div className="col-span-1 sm:col-span-2 lg:col-span-1 bg-gradient-to-br from-primary to-indigo-600 rounded-2xl p-5 md:p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-8 -mt-8 blur-2xl"></div>
           <div className="relative z-10">
             <p className="text-sm font-medium text-white/80 mb-1">Saldo Atual</p>
-            <h3 className="text-3xl font-bold break-words tracking-tight">{formatCurrency(stats.totalBalance)}</h3>
+            <h3 className="text-3xl font-bold break-words tracking-tight">
+              <PrivacyMask value={stats.totalBalance} />
+            </h3>
             <div className="mt-4 flex items-center gap-2 text-xs font-medium text-white/90 bg-white/20 w-fit px-2 py-1 rounded-lg backdrop-blur-sm">
               <DollarSign size={14} />
               <span>Disponível</span>
@@ -74,7 +78,9 @@ export const Dashboard = () => {
               </div>
               <p className="text-xs font-medium text-slate-500">Despesas</p>
             </div>
-            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalExpenses)}</h3>
+            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">
+              <PrivacyMask value={stats.totalExpenses} />
+            </h3>
           </div>
         </Card>
 
@@ -86,15 +92,19 @@ export const Dashboard = () => {
               </div>
               <p className="text-xs font-medium text-slate-500">Receitas</p>
             </div>
-            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalIncome)}</h3>
+            <h3 className="text-lg md:text-2xl font-bold text-slate-800 break-words">
+              <PrivacyMask value={stats.totalIncome} />
+            </h3>
           </div>
         </Card>
 
-        <Card className="col-span-2 lg:col-span-1 border-none shadow-sm bg-white/50 backdrop-blur-sm">
+        <Card className="col-span-1 sm:col-span-2 lg:col-span-1 border-none shadow-sm bg-white/50 backdrop-blur-sm">
           <div className="p-3 md:p-6 flex items-center justify-between">
             <div>
               <p className="text-xs font-medium text-slate-500 mb-1">Total Investido</p>
-              <h3 className="text-xl md:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalInvested)}</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-slate-800 break-words">
+                <PrivacyMask value={stats.totalInvested} />
+              </h3>
             </div>
             <div className="p-2 bg-accent/10 rounded-xl text-accent">
               <TrendingUp size={20} />
@@ -102,6 +112,8 @@ export const Dashboard = () => {
           </div>
         </Card>
       </div>
+
+      <GamificationWidget />
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

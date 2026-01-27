@@ -8,6 +8,7 @@ import { Transactions } from './pages/Transactions';
 import { Goals } from './pages/Goals';
 import { Investments } from './pages/Investments';
 import { Reports } from './pages/Reports';
+import { FinancialAssistant } from './pages/FinancialAssistant';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 
@@ -45,6 +46,7 @@ function App() {
                       <Route path="/goals" element={<Goals />} />
                       <Route path="/investments" element={<Investments />} />
                       <Route path="/reports" element={<Reports />} />
+                      <Route path="/assistant" element={<FinancialAssistant />} />
                     </Routes>
                   </Layout>
                 </PrivateRoute>

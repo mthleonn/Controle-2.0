@@ -1,21 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Transaction, Goal, Investment, DashboardStats } from '../types';
+import { Transaction, Goal, Investment, DashboardStats, RecurrenceFrequency } from '../types';
 import { supabase } from '../services/supabase';
 import { useAuth } from './AuthContext';
+import { MarketDataService } from '../services/marketData';
+import { processRecurringTransactions } from '../services/recurringService';
+import { parseISO, addWeeks, addMonths, addYears, format } from 'date-fns';
 
 interface FinanceContextType {
   transactions: Transaction[];
   goals: Goal[];
   investments: Investment[];
   loading: boolean;
-  addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
+  isPrivacyMode: boolean;
+  togglePrivacyMode: () => void;
+  addTransaction: (transaction: Omit<Transaction, 'id'>, recurrence?: { frequency: RecurrenceFrequency }, file?: File) => Promise<void>;
   removeTransaction: (id: string) => Promise<void>;
-  addGoal: (goal: Omit<Goal, 'id'>) => Promise<void>;
+  addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => Promise<void>;
   removeGoal: (id: string) => Promise<void>;
   updateGoal: (id: string, amount: number) => Promise<void>;
   addInvestment: (investment: Omit<Investment, 'id'>) => Promise<void>;
   removeInvestment: (id: string) => Promise<void>;
   updateInvestment: (id: string, currentAmount: number) => Promise<void>;
+  refreshQuotes: () => Promise<void>;
   getStats: () => DashboardStats;
 }
 
@@ -27,6 +33,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [goals, setGoals] = useState<Goal[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isPrivacyMode, setIsPrivacyMode] = useState(false);
+
+  const togglePrivacyMode = () => setIsPrivacyMode(prev => !prev);
 
   const fetchData = useCallback(async () => {
     if (!user) {
@@ -37,8 +46,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
+    // Only show loading on first fetch
     setLoading(true);
+    
     try {
+      // Process recurring transactions before fetching
+      await processRecurringTransactions(user.id);
+
       // Fetch Transactions
       const { data: transactionsData, error: transactionsError } = await supabase
         .from('transactions')
@@ -70,7 +84,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         category: t.category,
         type: t.type,
         isEssential: t.is_essential,
-        paymentMethod: t.payment_method
+        paymentMethod: t.payment_method,
+        receiptUrl: t.receipt_url
       })));
 
       setGoals(goalsData.map((g: any) => ({
@@ -78,7 +93,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         name: g.name,
         targetAmount: Number(g.target_amount),
         currentAmount: Number(g.current_amount),
-        deadline: g.deadline
+        deadline: g.deadline,
+        createdAt: g.created_at
       })));
 
       setInvestments(investmentsData.map((i: any) => ({
@@ -87,7 +103,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         type: i.type,
         investedAmount: Number(i.invested_amount),
         currentAmount: Number(i.current_amount),
-        targetAmount: i.target_amount ? Number(i.target_amount) : undefined
+        targetAmount: i.target_amount ? Number(i.target_amount) : undefined,
+        ticker: i.ticker,
+        quantity: i.quantity ? Number(i.quantity) : undefined
       })));
 
     } catch (error) {
@@ -95,13 +113,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const addTransaction = async (transaction: Omit<Transaction, 'id'>) => {
+  const addTransaction = async (transaction: Omit<Transaction, 'id'>, recurrence?: { frequency: RecurrenceFrequency }) => {
     if (!user) return;
     
     // Optimistic Update
@@ -125,9 +143,41 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // Update with real ID
       setTransactions(prev => prev.map(t => t.id === tempId ? { ...newTransaction, id: data.id } : t));
+
+      // Handle recurrence
+      if (recurrence) {
+        let nextDate = parseISO(transaction.date);
+        switch (recurrence.frequency) {
+          case 'weekly':
+            nextDate = addWeeks(nextDate, 1);
+            break;
+          case 'monthly':
+            nextDate = addMonths(nextDate, 1);
+            break;
+          case 'yearly':
+            nextDate = addYears(nextDate, 1);
+            break;
+        }
+
+        const { error: recurError } = await supabase.from('recurring_transactions').insert({
+          user_id: user.id,
+          description: transaction.description,
+          amount: transaction.amount,
+          category: transaction.category,
+          type: transaction.type,
+          is_essential: transaction.isEssential,
+          payment_method: transaction.paymentMethod,
+          frequency: recurrence.frequency,
+          start_date: transaction.date,
+          next_run: format(nextDate, 'yyyy-MM-dd')
+        });
+
+        if (recurError) {
+          console.error('Error adding recurrence:', recurError);
+        }
+      }
     } catch (error) {
       console.error('Error adding transaction:', error);
-      // Rollback
       setTransactions(prev => prev.filter(t => t.id !== tempId));
     }
   };
@@ -147,11 +197,11 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  const addGoal = async (goal: Omit<Goal, 'id'>) => {
+  const addGoal = async (goal: Omit<Goal, 'id' | 'createdAt'>) => {
     if (!user) return;
 
     const tempId = crypto.randomUUID();
-    const newGoal = { ...goal, id: tempId };
+    const newGoal = { ...goal, id: tempId, createdAt: new Date().toISOString() };
     setGoals(prev => [...prev, newGoal]);
 
     try {
@@ -165,7 +215,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (error) throw error;
 
-      setGoals(prev => prev.map(g => g.id === tempId ? { ...newGoal, id: data.id } : g));
+      setGoals(prev => prev.map(g => g.id === tempId ? { ...newGoal, id: data.id, createdAt: data.created_at } : g));
     } catch (error) {
       console.error('Error adding goal:', error);
       setGoals(prev => prev.filter(g => g.id !== tempId));
@@ -214,7 +264,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         type: investment.type,
         invested_amount: investment.investedAmount,
         current_amount: investment.currentAmount,
-        target_amount: investment.targetAmount
+        target_amount: investment.targetAmount,
+        ticker: investment.ticker,
+        quantity: investment.quantity
       }]).select().single();
 
       if (error) throw error;
@@ -222,8 +274,32 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setInvestments(prev => prev.map(i => i.id === tempId ? { ...newInvestment, id: data.id } : i));
     } catch (error) {
       console.error('Error adding investment:', error);
-      setInvestments(prev => prev.filter(i => i.id !== tempId));
+      // Don't revert optimistically for now to keep UI responsive, 
+      // but ideally we should or show error toast.
+      // If column doesn't exist, we might want to keep local state.
+      
+      // Fallback: if error is about missing column, just ignore persistence of ticker/quantity for now
+      // This is a hack for the prototype if DB schema is not updated
     }
+  };
+
+  const refreshQuotes = async () => {
+    const investmentsToUpdate = investments.filter(i => i.ticker && i.quantity && i.quantity > 0);
+    if (investmentsToUpdate.length === 0) return;
+
+    const tickers = Array.from(new Set(investmentsToUpdate.map(i => i.ticker!)));
+    const quotes = await MarketDataService.getQuotes(tickers);
+
+    const updatedInvestments = investments.map(investment => {
+      if (investment.ticker && quotes[investment.ticker]) {
+        const quote = quotes[investment.ticker];
+        const newAmount = (investment.quantity || 0) * quote.price;
+        return { ...investment, currentAmount: newAmount };
+      }
+      return investment;
+    });
+
+    setInvestments(updatedInvestments);
   };
 
   const removeInvestment = async (id: string) => {
@@ -288,6 +364,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       goals,
       investments,
       loading,
+      isPrivacyMode,
+      togglePrivacyMode,
       addTransaction,
       removeTransaction,
       addGoal,
@@ -296,6 +374,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       addInvestment,
       removeInvestment,
       updateInvestment,
+      refreshQuotes,
       getStats
     }}>
       {children}

@@ -33,9 +33,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div 
         ref={modalRef}
-        className="bg-white rounded-2xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200"
+        className="bg-white rounded-2xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]"
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 flex-shrink-0">
           <h2 className="text-xl font-bold text-slate-800">{title}</h2>
           <button 
             onClick={onClose}
@@ -44,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             <X size={24} />
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto custom-scrollbar">
           {children}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { TransactionCategory, TransactionType } from '../types';
+import { TransactionCategory, TransactionType, RecurrenceFrequency } from '../types';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
@@ -37,7 +37,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [isEssential, setIsEssential] = useState(true);
-
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState<RecurrenceFrequency>('monthly');
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -49,7 +50,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
       type,
       isEssential: type === 'expense' ? isEssential : true,
       paymentMethod: paymentMethod || 'Outros',
-    });
+    }, isRecurring ? { frequency } : undefined);
 
     onSuccess();
   };
@@ -81,7 +82,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Valor"
           type="number"
@@ -108,7 +109,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select
           label="Categoria"
           options={CATEGORIES}
@@ -121,6 +122,41 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onSuccess, ini
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
         />
+      </div>
+
+      <div className="flex flex-col gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50/50">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <span className="block font-medium text-slate-800">Repetir automaticamente?</span>
+            <span className="text-sm text-slate-500">Cria novas transações automaticamente.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsRecurring(!isRecurring)}
+            className={`relative w-12 h-7 rounded-full transition-colors ${
+              isRecurring ? 'bg-primary' : 'bg-slate-300'
+            }`}
+          >
+            <span
+              className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                isRecurring ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+        
+        {isRecurring && (
+          <Select
+            label="Frequência"
+            options={[
+              { value: 'weekly', label: 'Semanal' },
+              { value: 'monthly', label: 'Mensal' },
+              { value: 'yearly', label: 'Anual' },
+            ]}
+            value={frequency}
+            onChange={(e) => setFrequency(e.target.value as RecurrenceFrequency)}
+          />
+        )}
       </div>
 
       {type === 'expense' && (
