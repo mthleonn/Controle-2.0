@@ -7,7 +7,6 @@ import { Modal } from './ui/Modal';
 import { TransactionForm } from './TransactionForm';
 
 const MobileHeader = ({ onOpenSidebar }: { onOpenSidebar: () => void }) => {
-  const { signOut } = useAuth();
   const { isPrivacyMode, togglePrivacyMode } = useFinance();
   
   return (
