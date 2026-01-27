@@ -34,7 +34,7 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 md:p-8">
         <div className="flex flex-col items-center mb-8">
           <div className="mb-4">
             <img 

@@ -47,7 +47,7 @@ export const Dashboard = () => {
           <h1 className="text-2xl font-bold text-slate-800">Visão Geral</h1>
           <p className="text-slate-500">Acompanhe sua saúde financeira.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="shrink-0">
+        <Button onClick={() => setIsModalOpen(true)} className="shrink-0 w-full md:w-auto">
           <Plus size={20} />
           Adicionar Gasto
         </Button>

@@ -56,7 +56,7 @@ export const Goals = () => {
           <h1 className="text-2xl font-bold text-slate-800">Metas Financeiras</h1>
           <p className="text-slate-500">Defina e acompanhe seus objetivos.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button onClick={() => setIsModalOpen(true)} className="w-full md:w-auto">
           <Plus size={20} />
           Nova Meta
         </Button>

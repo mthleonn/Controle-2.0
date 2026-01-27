@@ -29,7 +29,7 @@ export const Transactions = () => {
           <h1 className="text-2xl font-bold text-slate-800">Transações</h1>
           <p className="text-slate-500">Histórico completo de receitas e despesas.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button onClick={() => setIsModalOpen(true)} className="w-full md:w-auto">
           <Plus size={20} />
           Nova Transação
         </Button>
