@@ -42,76 +42,6 @@ const MobileHeader = ({ onOpenSidebar }: { onOpenSidebar: () => void }) => {
   );
 };
 
-const MobileNav = ({ onOpenNewTransaction, onOpenSidebar }: { onOpenNewTransaction: () => void, onOpenSidebar: () => void }) => {
-  const location = useLocation();
-  
-  const menuItems = [
-    { icon: LayoutDashboard, label: 'Início', path: '/' },
-    { icon: Wallet, label: 'Transações', path: '/transactions' },
-    { icon: PlusCircle, label: 'Novo', path: '#', isAction: true, onClick: onOpenNewTransaction },
-    { icon: PieChart, label: 'Relat.', path: '/reports' }, // Added Reports
-    { icon: Menu, label: 'Menu', path: '#', isAction: true, onClick: onOpenSidebar }, // Added Menu
-  ];
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200/50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-[40] px-6 pb-safe pt-2 md:hidden">
-      <div className="flex items-center justify-between h-20">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          
-          if (item.isAction) {
-            if (item.label === 'Novo') {
-              return (
-                <button 
-                  key={item.label}
-                  onClick={item.onClick}
-                  className="flex flex-col items-center justify-center -mt-8 relative z-10 group"
-                >
-                  <div className="w-14 h-14 bg-gradient-to-tr from-primary to-indigo-500 rounded-full flex items-center justify-center shadow-xl shadow-primary/30 text-white transition-transform active:scale-95 group-hover:shadow-primary/40 border-4 border-white">
-                    <PlusCircle size={28} strokeWidth={2.5} />
-                  </div>
-                </button>
-              );
-            }
-            // Menu Button
-            return (
-              <button 
-                key={item.label}
-                onClick={item.onClick}
-                className="flex flex-col items-center justify-center gap-1.5 w-12 transition-colors duration-200 text-slate-400 hover:text-slate-600"
-              >
-                <div className="p-1.5 rounded-xl transition-all">
-                  <item.icon size={22} strokeWidth={2} />
-                </div>
-                <span className="text-[10px] font-medium opacity-70">
-                  {item.label}
-                </span>
-              </button>
-            );
-          }
-
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center justify-center gap-1.5 w-12 transition-colors duration-200 ${
-                isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-600'
-              }`}
-            >
-              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-primary/10' : ''}`}>
-                <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-              <span className={`text-[10px] font-medium ${isActive ? 'opacity-100' : 'opacity-70'}`}>
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-};
-
 const Sidebar = ({ 
   onOpenNewTransaction, 
   isOpen, 
@@ -231,16 +161,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         onClose={() => setIsSidebarOpen(false)}
       />
       
-      <main className="md:pl-64 min-h-screen pt-20 pb-24 md:pt-0 md:pb-0 relative z-0 transition-all">
+      <main className="md:pl-64 min-h-screen pt-20 pb-4 md:pt-0 md:pb-0 relative z-0 transition-all">
         <div className="max-w-7xl mx-auto p-4 md:p-8">
           {children}
         </div>
       </main>
-      
-      <MobileNav 
-        onOpenNewTransaction={() => setIsTransactionModalOpen(true)} 
-        onOpenSidebar={() => setIsSidebarOpen(true)}
-      />
 
       <Modal
         isOpen={isTransactionModalOpen}
