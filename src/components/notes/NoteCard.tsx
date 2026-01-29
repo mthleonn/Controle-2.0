@@ -1,6 +1,6 @@
 import React from 'react';
 import { Note } from '../../types';
-import { Edit2, Trash2, Star, Calendar, Tag, Target, TrendingUp } from 'lucide-react';
+import { Edit2, Trash2, Star, Calendar, Target, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useFinance } from '../../context/FinanceContext';

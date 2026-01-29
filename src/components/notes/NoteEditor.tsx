@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Note } from '../../types';
 import { useFinance } from '../../context/FinanceContext';
-import { X, Save, Tag, Target, TrendingUp, Calendar, Plus } from 'lucide-react';
+import { X, Save, Tag, Target, TrendingUp, Calendar } from 'lucide-react';
 
 interface NoteEditorProps {
   isOpen: boolean;
