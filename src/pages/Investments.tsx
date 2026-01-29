@@ -3,7 +3,7 @@ import { CoinGeckoMarketData } from '../types';
 import { ICONS } from '../constants';
 import { fetchTopCoins } from '../services/coinGeckoService';
 import { useFinance } from '../context/FinanceContext';
-import { Trash2, TrendingUp, Wallet, PieChart as PieChartIcon } from 'lucide-react';
+import { Trash2, TrendingUp, Wallet, PieChart as PieChartIcon, RefreshCw } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#3b82f6', '#f59e0b'];
@@ -24,9 +24,10 @@ const FII_DATABASE = [
 ];
 
 export const Investments: React.FC = () => {
-  const { investments: contextInvestments, addInvestment, removeInvestment } = useFinance();
+  const { investments: contextInvestments, addInvestment, removeInvestment, refreshQuotes } = useFinance();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [cryptoOptions, setCryptoOptions] = useState<CoinGeckoMarketData[]>([]);
   
   const [type, setType] = useState<'crypto' | 'real_estate'>('crypto');
@@ -147,6 +148,17 @@ export const Investments: React.FC = () => {
     linkElement.click();
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshQuotes();
+    } catch (error) {
+      console.error('Error refreshing quotes:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const previewTotal = useMemo(() => {
     const q = parseFloat(quantity) || 0;
     const p = parseFloat(averagePrice) || 0;
@@ -161,12 +173,20 @@ export const Investments: React.FC = () => {
           <p className="text-sm md:text-base text-slate-500 font-medium">Controle total sobre suas moedas e ativos.</p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button onClick={handleExport} className="p-3 bg-white border-2 border-slate-100 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors flex-shrink-0">
+          <button 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className={`p-3 bg-white border-2 border-slate-100 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors flex-shrink-0 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`}
+            title="Atualizar cotações"
+          >
+            <RefreshCw className="w-5 h-5" />
+          </button>
+          <button onClick={handleExport} className="p-3 bg-white border-2 border-slate-100 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors flex-shrink-0" title="Exportar portfólio">
             <ICONS.PieChart className="w-5 h-5" />
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex-1 md:flex-none px-4 md:px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 whitespace-nowrap"
+            className="flex-1 md:w-auto px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center space-x-2 whitespace-nowrap active:scale-95"
           >
             <ICONS.Plus className="w-5 h-5" />
             <span>Adicionar Ativo</span>
