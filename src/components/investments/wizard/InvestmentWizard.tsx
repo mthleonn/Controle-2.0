@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { InvestmentType } from '../../../types';
+import React, { useState, useEffect } from 'react';
+import { InvestmentType, Investment } from '../../../types';
 import { StepTypeSelection } from './StepTypeSelection';
 import { StepAssetSearch } from './StepAssetSearch';
 import { StepDetails } from './StepDetails';
@@ -9,14 +9,32 @@ import { X } from 'lucide-react';
 interface InvestmentWizardProps {
   isOpen: boolean;
   onClose: () => void;
+  initialInvestment?: Investment | null;
 }
 
-export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({ isOpen, onClose }) => {
+export const InvestmentWizard: React.FC<InvestmentWizardProps> = ({ isOpen, onClose, initialInvestment }) => {
   const { addInvestment } = useFinance();
   const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState<InvestmentType | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<{ name: string; ticker: string; price?: number } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialInvestment) {
+        setSelectedType(initialInvestment.type);
+        setSelectedAsset({
+          name: initialInvestment.name,
+          ticker: initialInvestment.ticker || initialInvestment.name,
+        });
+        setStep(3);
+      } else {
+        setStep(1);
+        setSelectedType(null);
+        setSelectedAsset(null);
+      }
+    }
+  }, [isOpen, initialInvestment]);
 
   if (!isOpen) return null;
 

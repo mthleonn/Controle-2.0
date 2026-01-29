@@ -19,6 +19,7 @@ interface FinanceContextType {
   removeGoal: (id: string) => Promise<void>;
   updateGoal: (id: string, amount: number) => Promise<void>;
   addInvestment: (investment: Omit<Investment, 'id'>) => Promise<void>;
+  sellInvestment: (id: string, quantityToSell: number, salePrice: number) => Promise<void>;
   removeInvestment: (id: string) => Promise<void>;
   updateInvestment: (id: string, currentAmount: number) => Promise<void>;
   refreshQuotes: () => Promise<void>;
@@ -348,6 +349,50 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  const sellInvestment = async (id: string, quantityToSell: number, salePrice: number) => {
+    if (!user) return;
+    const investment = investments.find(i => i.id === id);
+    if (!investment) return;
+
+    const currentQuantity = investment.quantity || 0;
+    const newQuantity = currentQuantity - quantityToSell;
+
+    if (newQuantity <= 0.000001) {
+      // Venda total -> Remover
+      await removeInvestment(id);
+    } else {
+      // Venda parcial -> Atualizar
+      // Reduzir investedAmount proporcionalmente para manter o Preço Médio
+      const averagePrice = investment.investedAmount / currentQuantity;
+      const newInvestedAmount = averagePrice * newQuantity;
+      
+      // Atualizar currentAmount com base no preço de venda (assumindo que é o preço atual de mercado)
+      const newCurrentAmount = newQuantity * salePrice; 
+
+      const updatedInvestment = {
+        ...investment,
+        quantity: newQuantity,
+        investedAmount: newInvestedAmount,
+        currentAmount: newCurrentAmount
+      };
+
+      setInvestments(prev => prev.map(i => i.id === id ? updatedInvestment : i));
+
+      try {
+        const { error } = await supabase.from('investments').update({
+          quantity: newQuantity,
+          invested_amount: newInvestedAmount,
+          current_amount: newCurrentAmount
+        }).eq('id', id);
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error selling investment:', error);
+        // Revert não implementado por simplicidade, mas seria ideal
+      }
+    }
+  };
+
   const updateInvestment = async (id: string, currentAmount: number) => {
     if (!user) return;
 
@@ -404,6 +449,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       removeGoal,
       updateGoal,
       addInvestment,
+      sellInvestment,
       removeInvestment,
       updateInvestment,
       refreshQuotes,

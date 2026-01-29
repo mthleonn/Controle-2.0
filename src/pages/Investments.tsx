@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { InvestmentWizard } from '../components/investments/wizard/InvestmentWizard';
+import { SellInvestmentModal } from '../components/investments/wizard/SellInvestmentModal';
 import { 
   TrendingUp, 
   PieChart as PieChartIcon, 
   Wallet, 
   ArrowUpRight, 
   Plus, 
+  Minus,
   RefreshCw, 
   Bot,
   Info,
@@ -22,6 +24,8 @@ export const Investments: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [expandedType, setExpandedType] = useState<string | null>(null);
+  const [sellingInvestment, setSellingInvestment] = useState<Investment | null>(null);
+  const [editingInvestment, setEditingInvestment] = useState<Investment | null>(null);
 
   // Cálculos de Resumo
   const stats = useMemo(() => {
@@ -256,21 +260,48 @@ export const Investments: React.FC = () => {
                 {(expandedType === type || typeInvestments.length <= 3) && ( // Expandido ou se tiver poucos itens
                   <div className="divide-y divide-slate-100">
                     {typeInvestments.map((inv) => (
-                      <div key={inv.id} className="p-4 flex justify-between items-center hover:bg-slate-50/30 transition-colors">
+                      <div key={inv.id} className="p-4 flex justify-between items-center hover:bg-slate-50/30 transition-colors group">
                         <div>
                           <p className="font-bold text-slate-800">{inv.name}</p>
                           <p className="text-xs text-slate-500 font-medium">
                             {inv.ticker ? inv.ticker : 'Renda Fixa'} • {inv.quantity?.toFixed(4) || 1} cotas
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-slate-800">
-                            R$ {inv.currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </p>
-                          <p className={`text-xs font-bold ${inv.currentAmount >= inv.investedAmount ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            {inv.currentAmount >= inv.investedAmount ? '+' : ''}
-                            {((inv.currentAmount - inv.investedAmount) / inv.investedAmount * 100).toFixed(2)}%
-                          </p>
+                        
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                             <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingInvestment(inv);
+                                setIsWizardOpen(true);
+                              }}
+                              className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors"
+                              title="Adicionar mais"
+                            >
+                              <Plus size={18} />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSellingInvestment(inv);
+                              }}
+                              className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Vender/Remover"
+                            >
+                              <Minus size={18} />
+                            </button>
+                          </div>
+
+                          <div className="text-right min-w-[100px]">
+                            <p className="font-bold text-slate-800">
+                              R$ {inv.currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                            <p className={`text-xs font-bold ${inv.currentAmount >= inv.investedAmount ? 'text-emerald-500' : 'text-rose-500'}`}>
+                              {inv.currentAmount >= inv.investedAmount ? '+' : ''}
+                              {((inv.currentAmount - inv.investedAmount) / inv.investedAmount * 100).toFixed(2)}%
+                            </p>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -282,9 +313,21 @@ export const Investments: React.FC = () => {
         </div>
       )}
 
+      {sellingInvestment && (
+        <SellInvestmentModal
+          isOpen={!!sellingInvestment}
+          onClose={() => setSellingInvestment(null)}
+          investment={sellingInvestment}
+        />
+      )}
+
       <InvestmentWizard 
         isOpen={isWizardOpen} 
-        onClose={() => setIsWizardOpen(false)} 
+        onClose={() => {
+          setIsWizardOpen(false);
+          setEditingInvestment(null);
+        }}
+        initialInvestment={editingInvestment}
       />
     </div>
   );
