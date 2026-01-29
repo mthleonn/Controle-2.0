@@ -91,3 +91,16 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
 }
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  isFavorite: boolean;
+  relatedGoalId?: string;
+  relatedInvestmentId?: string;
+  relatedMonth?: string; // YYYY-MM
+  createdAt: string;
+  updatedAt: string;
+}

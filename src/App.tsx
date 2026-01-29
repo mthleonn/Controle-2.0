@@ -9,6 +9,7 @@ import { Goals } from './pages/Goals';
 import { Investments } from './pages/Investments';
 import { Reports } from './pages/Reports';
 import { FinancialAssistant } from './pages/FinancialAssistant';
+import { Notes } from './pages/Notes';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 
@@ -45,6 +46,7 @@ function App() {
                       <Route path="/transactions" element={<Transactions />} />
                       <Route path="/goals" element={<Goals />} />
                       <Route path="/investments" element={<Investments />} />
+                      <Route path="/notes" element={<Notes />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/assistant" element={<FinancialAssistant />} />
                     </Routes>

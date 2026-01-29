@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut, Bot, Eye, EyeOff, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, Target, TrendingUp, PieChart, PlusCircle, LogOut, Bot, Eye, EyeOff, Menu, X, BookOpen } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import { Modal } from './ui/Modal';
@@ -61,6 +61,7 @@ const Sidebar = ({
     { icon: Wallet, label: 'Transações', path: '/transactions' },
     { icon: Target, label: 'Metas', path: '/goals' },
     { icon: TrendingUp, label: 'Investimentos', path: '/investments' },
+    { icon: BookOpen, label: 'Anotações', path: '/notes' },
     { icon: PieChart, label: 'Relatórios', path: '/reports' },
   ];
 

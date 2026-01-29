@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Transaction, Goal, Investment, DashboardStats, RecurrenceFrequency } from '../types';
+import { Transaction, Goal, Investment, DashboardStats, RecurrenceFrequency, Note } from '../types';
 import { supabase } from '../services/supabase';
 import { useAuth } from './AuthContext';
 import { MarketDataService } from '../services/marketData';
@@ -10,6 +10,7 @@ interface FinanceContextType {
   transactions: Transaction[];
   goals: Goal[];
   investments: Investment[];
+  notes: Note[];
   loading: boolean;
   isPrivacyMode: boolean;
   togglePrivacyMode: () => void;
@@ -24,6 +25,9 @@ interface FinanceContextType {
   updateInvestment: (id: string, currentAmount: number) => Promise<void>;
   refreshQuotes: () => Promise<void>;
   getStats: () => DashboardStats;
+  addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updateNote: (id: string, note: Partial<Note>) => Promise<void>;
+  deleteNote: (id: string) => Promise<void>;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -33,6 +37,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPrivacyMode, setIsPrivacyMode] = useState(false);
 
@@ -76,6 +81,14 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (investmentsError) throw investmentsError;
 
+      // Fetch Notes
+      const { data: notesData, error: notesError } = await supabase
+        .from('notes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (notesError) throw notesError;
+
       // Map DB to State
       setTransactions(transactionsData.map((t: any) => ({
         id: t.id,
@@ -107,6 +120,19 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         targetAmount: i.target_amount ? Number(i.target_amount) : undefined,
         ticker: i.ticker,
         quantity: i.quantity ? Number(i.quantity) : undefined
+      })));
+
+      setNotes(notesData.map((n: any) => ({
+        id: n.id,
+        title: n.title,
+        content: n.content,
+        tags: n.tags,
+        isFavorite: n.is_favorite,
+        relatedGoalId: n.related_goal_id,
+        relatedInvestmentId: n.related_investment_id,
+        relatedMonth: n.related_month,
+        createdAt: n.created_at,
+        updatedAt: n.updated_at
       })));
 
     } catch (error) {
@@ -435,11 +461,82 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   };
 
+  const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!user) return;
+    const tempId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const newNote = { ...note, id: tempId, createdAt: now, updatedAt: now };
+    setNotes(prev => [newNote, ...prev]);
+
+    try {
+      const { data, error } = await supabase.from('notes').insert([{
+        user_id: user.id,
+        title: note.title,
+        content: note.content,
+        tags: note.tags,
+        is_favorite: note.isFavorite,
+        related_goal_id: note.relatedGoalId,
+        related_investment_id: note.relatedInvestmentId,
+        related_month: note.relatedMonth
+      }]).select().single();
+
+      if (error) throw error;
+
+      setNotes(prev => prev.map(n => n.id === tempId ? {
+        ...newNote,
+        id: data.id,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+      } : n));
+    } catch (error) {
+      console.error('Error adding note:', error);
+      setNotes(prev => prev.filter(n => n.id !== tempId));
+    }
+  };
+
+  const updateNote = async (id: string, updates: Partial<Note>) => {
+    if (!user) return;
+    
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates, updatedAt: new Date().toISOString() } : n));
+
+    try {
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.content !== undefined) dbUpdates.content = updates.content;
+      if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+      if (updates.isFavorite !== undefined) dbUpdates.is_favorite = updates.isFavorite;
+      if (updates.relatedGoalId !== undefined) dbUpdates.related_goal_id = updates.relatedGoalId;
+      if (updates.relatedInvestmentId !== undefined) dbUpdates.related_investment_id = updates.relatedInvestmentId;
+      if (updates.relatedMonth !== undefined) dbUpdates.related_month = updates.relatedMonth;
+
+      const { error } = await supabase.from('notes').update(dbUpdates).eq('id', id);
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating note:', error);
+      // Revert strategy would be needed here
+    }
+  };
+
+  const deleteNote = async (id: string) => {
+    if (!user) return;
+    const prevNotes = [...notes];
+    setNotes(prev => prev.filter(n => n.id !== id));
+
+    try {
+      const { error } = await supabase.from('notes').delete().eq('id', id);
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      setNotes(prevNotes);
+    }
+  };
+
   return (
     <FinanceContext.Provider value={{
       transactions,
       goals,
       investments,
+      notes,
       loading,
       isPrivacyMode,
       togglePrivacyMode,
@@ -453,7 +550,10 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       removeInvestment,
       updateInvestment,
       refreshQuotes,
-      getStats
+      getStats,
+      addNote,
+      updateNote,
+      deleteNote
     }}>
       {children}
     </FinanceContext.Provider>
