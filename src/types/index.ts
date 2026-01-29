@@ -54,7 +54,7 @@ export interface Goal {
   createdAt: string;
 }
 
-export type InvestmentType = 'cdi' | 'crypto' | 'stock' | 'real_estate';
+export type InvestmentType = 'fixed_income' | 'stock' | 'real_estate_fund' | 'crypto' | 'exchange';
 
 export interface Investment {
   id: string;
@@ -65,6 +65,7 @@ export interface Investment {
   targetAmount?: number; // Valor total do objetivo (opcional)
   ticker?: string; // Código da ação/cripto (Ex: PETR4, BTC)
   quantity?: number; // Quantidade de cotas/moedas
+  lastUpdate?: string; // Data da última atualização
 }
 
 export interface DashboardStats {

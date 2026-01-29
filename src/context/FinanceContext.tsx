@@ -253,33 +253,65 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addInvestment = async (investment: Omit<Investment, 'id'>) => {
     if (!user) return;
 
-    const tempId = crypto.randomUUID();
-    const newInvestment = { ...investment, id: tempId };
-    setInvestments(prev => [...prev, newInvestment]);
+    // Verifica se já existe o ativo na carteira (pelo Ticker ou Nome para Renda Fixa)
+    const existingInvestment = investments.find(i => 
+      (investment.ticker && i.ticker === investment.ticker && i.type === investment.type) ||
+      (!investment.ticker && i.name === investment.name && i.type === investment.type)
+    );
 
-    try {
-      const { data, error } = await supabase.from('investments').insert([{
-        user_id: user.id,
-        name: investment.name,
-        type: investment.type,
-        invested_amount: investment.investedAmount,
-        current_amount: investment.currentAmount,
-        target_amount: investment.targetAmount,
-        ticker: investment.ticker,
-        quantity: investment.quantity
-      }]).select().single();
+    if (existingInvestment) {
+      // ATUALIZAÇÃO (Preço Médio)
+      const newQuantity = (existingInvestment.quantity || 0) + (investment.quantity || 0);
+      const newInvestedAmount = existingInvestment.investedAmount + investment.investedAmount;
+      // Assume que o valor atual do novo aporte é igual ao valor investido inicialmente
+      const newCurrentAmount = existingInvestment.currentAmount + investment.currentAmount; 
 
-      if (error) throw error;
+      // Optimistic Update
+      setInvestments(prev => prev.map(i => i.id === existingInvestment.id ? {
+        ...i,
+        quantity: newQuantity,
+        investedAmount: newInvestedAmount,
+        currentAmount: newCurrentAmount
+      } : i));
 
-      setInvestments(prev => prev.map(i => i.id === tempId ? { ...newInvestment, id: data.id } : i));
-    } catch (error) {
-      console.error('Error adding investment:', error);
-      // Don't revert optimistically for now to keep UI responsive, 
-      // but ideally we should or show error toast.
-      // If column doesn't exist, we might want to keep local state.
-      
-      // Fallback: if error is about missing column, just ignore persistence of ticker/quantity for now
-      // This is a hack for the prototype if DB schema is not updated
+      try {
+        const { error } = await supabase.from('investments').update({
+          quantity: newQuantity,
+          invested_amount: newInvestedAmount,
+          current_amount: newCurrentAmount
+        }).eq('id', existingInvestment.id);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating investment:', error);
+        // Revert seria ideal aqui
+      }
+
+    } else {
+      // NOVO CADASTRO
+      const tempId = crypto.randomUUID();
+      const newInvestment = { ...investment, id: tempId };
+      setInvestments(prev => [...prev, newInvestment]);
+
+      try {
+        const { data, error } = await supabase.from('investments').insert([{
+          user_id: user.id,
+          name: investment.name,
+          type: investment.type,
+          invested_amount: investment.investedAmount,
+          current_amount: investment.currentAmount,
+          target_amount: investment.targetAmount,
+          ticker: investment.ticker,
+          quantity: investment.quantity
+        }]).select().single();
+
+        if (error) throw error;
+
+        setInvestments(prev => prev.map(i => i.id === tempId ? { ...newInvestment, id: data.id } : i));
+      } catch (error) {
+        console.error('Error adding investment:', error);
+        setInvestments(prev => prev.filter(i => i.id !== tempId));
+      }
     }
   };
 
