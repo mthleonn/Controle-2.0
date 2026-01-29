@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Investment } from '../../../types';
 import { useFinance } from '../../../context/FinanceContext';
-import { X, TrendingDown, AlertTriangle } from 'lucide-react';
+import { X, TrendingDown, AlertTriangle, Trash2 } from 'lucide-react';
 
 interface SellInvestmentModalProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface SellInvestmentModalProps {
 }
 
 export const SellInvestmentModal: React.FC<SellInvestmentModalProps> = ({ isOpen, onClose, investment }) => {
-  const { sellInvestment } = useFinance();
+  const { sellInvestment, removeInvestment } = useFinance();
   const [quantity, setQuantity] = useState('');
   const [salePrice, setSalePrice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +33,20 @@ export const SellInvestmentModal: React.FC<SellInvestmentModalProps> = ({ isOpen
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    if (window.confirm('Tem certeza que deseja remover este investimento? Esta ação não gera histórico de venda.')) {
+      setIsLoading(true);
+      try {
+        await removeInvestment(investment.id);
+        onClose();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -126,6 +140,17 @@ export const SellInvestmentModal: React.FC<SellInvestmentModalProps> = ({ isOpen
               </>
             )}
           </button>
+
+          <div className="pt-4 border-t border-slate-100 text-center">
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="text-slate-400 hover:text-rose-500 text-sm font-medium transition-colors flex items-center justify-center gap-2 mx-auto"
+            >
+              <Trash2 size={16} />
+              Apenas remover da carteira (sem vender)
+            </button>
+          </div>
         </form>
       </div>
     </div>
