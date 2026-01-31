@@ -12,7 +12,6 @@ export const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [sessionCheckComplete, setSessionCheckComplete] = useState(false);
 
   useEffect(() => {
     // Verify if the user is authenticated (via the recovery link)
@@ -22,18 +21,13 @@ export const ResetPassword = () => {
         // If no session, the link might be invalid or expired
         // However, supabase-js might still be processing the hash
         // We give it a moment or rely on the user trying to submit
-        // But better UX is to tell them if the link is bad immediately if possible.
-        // For now, we'll let them try, or show a warning if we are sure.
-        // A common pattern is to wait for the PASSWORD_RECOVERY event in a global listener,
-        // but since we are on the specific page, we assume the user just arrived.
       }
-      setSessionCheckComplete(true);
     };
 
     checkSession();
     
     // Listen for auth state changes to clear hash from URL
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
       if (event === 'PASSWORD_RECOVERY') {
         // This is the specific event for this flow
       }
