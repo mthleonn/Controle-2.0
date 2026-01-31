@@ -91,10 +91,19 @@ export const Login = () => {
             required
           />
           
-          <div className="pt-2">
+          <div className="pt-2 space-y-4">
             <Button type="submit" fullWidth disabled={loading}>
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
+            
+            <div className="text-center">
+              <Link 
+                to="/forgot-password" 
+                className="text-sm text-slate-500 hover:text-primary transition-colors font-medium"
+              >
+                Esqueci minha senha
+              </Link>
+            </div>
           </div>
         </form>
 
